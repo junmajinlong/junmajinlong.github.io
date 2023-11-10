@@ -1,0 +1,18 @@
+[book]
+authors = ["longshuai"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Rust入门秘籍"
+description = "Rust入门"
+
+[output.html]
+theme = "mytheme"
+default-theme = "rust"
+copy-fonts = false
+additional-css = ["mytheme/fonts/cascadia-font.css","mytheme/style.css"]
+additional-js = ["mytheme/sidebar.js"]
+
+[output.html.font]
+enable = true
+woff = true

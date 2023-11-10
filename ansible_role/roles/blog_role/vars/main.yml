@@ -1,0 +1,15 @@
+---
+# vars file for blog_role
+CF_Key: "5eb06ff0eb9dd0e7c439e18999cc8c04661c7"
+CF_Email: "905815661@qq.com"
+
+blog_domain: junmajinlong.com
+nginx_ssl_path: /etc/nginx/ssl
+
+trojan_domain: malongshuai.cn
+trojan_ssl_path: /etc/trojan/ssl
+trojan_passwd: mls@gxf1129
+trojan_server_port: 4433
+trojan_client_port: 1001
+
+privoxy_port: 8118

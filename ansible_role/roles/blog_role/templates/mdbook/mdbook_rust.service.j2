@@ -1,0 +1,17 @@
+[Unit]
+Description=rust book
+AssertPathIsDirectory=/blog/books/rust
+
+[Service]
+#MemoryLimit=250M
+MemoryHigh=250M
+CPUQuota=70%
+WorkingDirectory=/blog/books/rust
+ExecStartPre=bash -c '/root/.cargo/bin/mdbook clean'
+ExecStart=/root/.cargo/bin/mdbook serve --open -n 0.0.0.0 -p 8880
+ExecStartPost=bash -c 'sleep 1;/usr/bin/cp mytheme/fonts/Cascadia.woff book/mytheme/fonts'
+#Restart=always
+#RestartSec=15s
+
+[Install]
+WantedBy=multi-user.target

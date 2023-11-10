@@ -1,0 +1,8 @@
+---
+- name: deploy blog
+  hosts: localhost
+  gather_facts: no
+  roles:
+    - blog_role
+
+

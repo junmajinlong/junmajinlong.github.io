@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# 修改博客图片路径并上传博客图片到themes/butterfly/source/img/$category
+# Usage: $0 md_file Category_dir
+#      eg.  $0 1.md shell
+#      eg.  $0 1.md root    # 上传到/img下
+[ "$1" == "--help" ] && { echo Usage: $0 md_file Category_dir;exit 1; }
+
+[ $# -ne 2 ] && { echo Usage: $0 md_file Category_dir;exit 1; }
+
+md_file="$1"   # markdown文件路径
+category=$2  # 文章分类，上传到哪个服务器上的目录下
+
+if [ x"$category" = x"root" ];then  # 如果目录为root，则上传到/img下
+  category=""
+fi
+img_dir="/mnt/g/blog/themes/butterfly/source/img/$category"
+[ -d "$img_dir" ] || mkdir -p "${img_dir}"
+
+# 临时存放图片路径，最后会将该临时目录中所有图片拷贝到 $img_dir 中
+img_tmpdir=/tmp/img_tmpdir
+[ -d "$img_tmpdir" ] || mkdir -p "${img_tmpdir}"
+
+trap "rm -rf $img_tmpdir;exit 1" EXIT
+
+# 先备份源markdown文件，备份后的文件后缀加.bak
+cp "${md_file}" "${md_file}".$(printf "%(%s)T")
+
+# 筛选出图片路径![](xxx.png)：
+# 本地: ![](E:\onedrive\blog_imgs\733013-0413.png)
+# 或cnblogs: ![](https://img2018.cnblogs.com/blog/733013/201907/733013-0413.png)
+# 或定义在markdown结尾的[xxx]: http:xxx.png
+#   例如：[1]: http://images2017.cnblogs.com/blog/733013/201710/733013.png  "6"
+while read -r img_path;do
+  echo IMG_PATH: $img_path
+  # 下载或拷贝图片到临时目录中
+  if echo "$img_path" | grep 'cnblogs' &>/dev/null;then
+    echo downloading: $img_path
+    wget -c -P $img_tmpdir "$img_path" &>/dev/null
+    [ $? -ne 0 ] && { echo download failed: $img_path;exit 3; }
+  else
+    img_path_in_wsl=$(echo $img_path|tr '\\' '/' | sed -r 's%([A-Z]):%/mnt/\L\1\E%')
+    [ -f "${img_path_in_wsl}" ] || { echo "指定的图片不存在: ${img_path_in_wsl}";exit 4; }
+    cp -f "${img_path_in_wsl}" $img_tmpdir/
+  fi
+done < <(grep -Eio '(https?://.*/.*\.|[a-zA-Z]:\\.*\\.*\.)(png|jpe?g|bmp|gif)' "${md_file}")
+
+# 直接上传整个目录内所有文件，但可能md文件中没有引用图片
+if [ "$(ls -A ${img_tmpdir})" ];then
+  echo "upload all imgs..."
+  cp "${img_tmpdir}"/* "${img_dir}/" # &>/dev/null
+  [ $? -ne 0 ] && { echo "上传失败...";exit 1; }
+fi
+
+sed -ri \
+  -e 's%(https?://.*/|[a-zA-Z]:\\.*\\.*\\)(.*\.(png|jpe?g|bmp|gif))%/img/'"$category"'/\2%i' \
+  -e 's%!\[.*\]%![]%' \
+  -e 's%\(/img//(.*\))%/img/\1%' "$md_file"

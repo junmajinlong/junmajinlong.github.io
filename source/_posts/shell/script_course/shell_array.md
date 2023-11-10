@@ -1,0 +1,296 @@
+---
+title: Shell脚本深入教程：Bash数组基础
+p: shell/script_course/shell_array.md
+date: 2020-05-19 14:17:07
+tags: Shell
+categories: Shell
+---
+
+------
+
+**[Linux基础系列文章大纲](/linux/index)**  
+**[Shell系列文章大纲](/shell/index)**  
+
+------
+
+# Bash数组
+
+Bash支持普通的数值索引数组，还支持关联数组。
+
+## 数组基础
+
+数组是最常见的数据结构，可以用来存放多个数据。
+
+有两种类型的数组：数值索引类型数组和关联数组。
+
+- 数值索引类型数组使用0、1、2、3...数值作为索引，通过索引可找到数组中对应位置的数据
+- 关联数组使用名称(通常是字符串，但某些语言中支持其它类型)作为索引，是key/value模式的结构，key是索引，value是对应元素的值。通过key索引可找到关联数组中对应的数据value
+
+关联数组在其它语言中也称为map、hash结构、dict等。所以，从严格意义上来说，关联数组不是数组，它不符合数组数据结构，只是因为访问方式类似于数值索引类型的数组，才在某些语言中称之为关联数组。
+
+**数值索引类型的数组**中存放的每个元素在内存中连续的，只要知道第一个元素的地址，就能计算出第2个元素地址、第3个元素地址、第N个元素地址。
+
+![](/img/shell/1581164046606.png)
+
+为了方便访问数组中的各个元素，都会使用索引下标来一一对应各个元素，且索引下标从0开始。也就是说，index=0的下标表示数组中的第一个元素，index=1的下标表示数组中第二个元素，index=N的下标表示数组中第N+1个元素。
+
+所以，要访问数组arr中的各个元素：
+
+```shell
+arr[0]:表示arr中第一个元素
+arr[1]:表示arr中第二个元素
+arr[2]:表示arr中第三个元素
+arr[3]:表示arr中第四个元素
+```
+
+有些语言为了提供更方便的访问方式，还支持负数索引，表示从尾部向头部访问。
+
+```shell
+arr[-1]:表示arr中倒数第一个元素
+arr[-2]:表示arr中倒数第二个元素
+arr[-3]:表示arr中倒数第三个元素
+arr[-4]:表示arr中倒数第四个元素
+```
+
+关联数组是key/value类型的hash结构，key和value一一对应。关联数组中各个元素在内存中不连续。
+
+![](/img/shell/1581164068159.png)
+
+在Bash中访问关联数组中元素的方式和访问数值索引类型数组中的元素是类似的，仅仅只是把数值索引换成key。
+
+所以，要访问关联数组arr中的各个元素：
+
+```
+arr['name']：表示访问key=name所对应的value，即返回junmajinlong
+arr['age']：表示访问key=age所对应的value，即返回22
+```
+
+## 定义、访问数值索引类型数组
+
+直接赋值某元素，会自动创建数组：
+
+```shell
+$ arr1[1]=one
+$ arr1[2]=two
+$ arr1[3]=three
+
+# 访问数组各元素
+$ echo ${arr1[1]}
+one
+$ echo ${arr1[2]}
+two
+$ echo ${arr1[-1]}   # 负数索引
+three
+```
+
+通过括号赋值创建数组：
+
+```shell
+$ arr2=(zero one two three)
+
+# 访问数组
+$ echo ${arr2[@]}
+zero one two three
+$ echo ${arr2[1]}
+one
+```
+
+通过Bash内置命令`declare`创建数值索引类型数组：
+
+```shell
+# 下面等价
+declare arr3
+declare -a arr4
+```
+
+`declare`定义数组时可直接赋值：
+
+```shell
+declare arr5=(zero one two)
+```
+
+需注意，可将数组当作变量来访问，这时访问的是数组的第一个元素：
+
+```bash
+$ arr=(11 22 33)
+$ echo $arr  # 11
+```
+
+如果是调试性的简单查看数组所有元素，可直接使用`printf`或`declare -p`：
+
+```bash
+$ arr=(11 22 33)
+$ printf "%s " "${arr[@]}"
+$ declare -p arr
+```
+
+## 定义、访问关联数组
+
+关联数组需要先使用`declare -A`来定义，然后才表示是关联数组。
+
+```shell
+declare -A aarr
+aarr[one]=1      # key部分可不加引号
+aarr[six]=6
+aarr[five]=5
+aarr[nine]=9
+```
+
+也可以使用括号直接赋值：
+
+```shell
+aarr=([one]=1 [two]=2)
+```
+
+访问关联数组中元素：
+
+```shell
+$ echo ${aarr[one]}
+1
+$ echo ${aarr[six]}
+6
+```
+
+## 其它数组基本操作
+
+下面的操作对数值索引类型的数组、关联数组都生效。
+
+访问数组所有元素的值：
+
+```shell
+$ echo ${arr[@]}
+$ echo ${arr[*]}
+```
+
+获取数组所有索引：
+
+```shell
+$ echo ${!arr[@]}
+$ echo ${!arr[*]}
+```
+
+获取数组中非空元素的个数：
+
+```shell
+$ echo ${#arr[@]}
+$ echo ${#arr[*]}
+```
+
+## 扩展数组和删除数组元素
+
+Bash中可使用`+=`操作符向数值索引的数组中添加元素或者扩展数组。
+
+```bash
+$ arr=(1 2 3)
+$ arr+=(11 22)  # 数组尾部追加两个元素，arr现在为(1 2 3 11 22)
+$ declare -p arr
+declare -a arr=([0]="1" [1]="2" [2]="3" [3]="11" [4]="22")
+$ arr+=('hello world')
+$ declare -p arr
+declare -a arr=([0]="1" [1]="2" [2]="3" [3]="11" [4]="22" [5]="hello world")
+```
+
+使用`unset`删除数组中的元素：
+
+```bash
+unset arr[1]  # 删除第二个元素
+unset arr[-1] # 删除最后一个元素
+```
+
+## 向shell函数传递数组引用
+
+多数人对Bash数组有误解，认为无法将Bash数组传递给函数参数，但实际上是可以的。
+
+Bash的`declare`命令有一个选项`-n`，可以定义变量的引用。例如：
+
+```bash
+function ff(){
+  declare -n _inner_arr__=$1 # 现在_inner_arr__和$1的值是同一个变量
+  echo ${_inner_arr__[@]}
+  #...do something...
+  declare +n _inner_arr__  # 取消变量引用
+}
+
+# 传递数组
+$ arr=(11 22 33)
+$ ff arr
+11 22 33
+```
+
+`declare`命令是深入shell脚本必学的命令之一，请记住它很重要，以后遇到一些变量相关的功能需求，记得去找declare。
+
+## 遍历数组
+
+遍历数组是指依次取得数组中的每个元素。Bash中可使用for循环来遍历。
+
+遍历方式1：使用`for...in ${arr[@]}`，可以获取每个元素的值
+
+```shell
+for i in ${arr[@]};do
+	echo $i
+done
+```
+
+遍历方式2：使用`for...in ${!arr[@]}`，可以获取每个元素的索引，间接的可以获取每个元素的值
+
+```shell
+for i in ${!arr[@]};do
+	echo index:$i
+	echo value: ${arr[$i]}
+done
+```
+
+遍历方式3：如果是数值索引类型，且每个元素都不为空，则还可以使用数组长度的方式遍历
+
+```shell
+for((i=0;i<${#arr[@]};i++)){
+  echo $i
+  echo ${arr[$i]}
+}
+```
+
+例如，文件a.txt内容如下：
+
+```shell
+portmapper
+portmapper
+portmapper
+portmapper
+portmapper
+portmapper
+status
+status
+mountd
+mountd
+mountd
+mountd
+mountd
+mountd
+nfs
+nfs
+nfs_acl
+nfs
+nfs
+nfs_acl
+nlockmgr
+nlockmgr
+nlockmgr
+nlockmgr
+nlockmgr
+nlockmgr
+```
+
+要统计每行数据出现的次数。
+
+```shell
+declare -A aarr
+for i in `cat a.txt`;do
+  let ++aarr[$i]
+done
+
+for i in ${!aarr[@]};do
+  echo ------
+  echo data: $i
+  echo count: ${aarr[$i]}
+done
+```

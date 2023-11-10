@@ -1,0 +1,46 @@
+---
+# tasks file for blog_role
+- name: set env path
+  blockinfile: 
+    path: /root/.bashrc
+    block: |
+      export CF_Key="{{CF_Key}}"
+      export CF_Email="{{CF_Email}}"
+
+- name: install socat curl acme
+  block:
+    - name: install socat curl
+      apt: 
+        name: socat,curl
+        state: present 
+    - name: install acme
+      shell: |
+        curl https://get.acme.sh | sh
+        exec bash
+        acme.sh --upgrade --auto-upgrade
+      args: 
+        creates: /root/.acme.sh
+
+- name: nginx config
+  include_tasks: nginx_config.yml
+
+- name: hexo config
+  include_tasks: hexo_config.yml
+
+- name: trojan config
+  include_tasks: trojan_config.yml
+
+- name: privoxy config
+  include_tasks: privoxy_config.yml
+
+- name: ufw config
+  include_tasks: ufw_config.yml
+
+- name: os tuning
+  include_tasks: os_tuning.yml
+
+- name: start nginx and trojan
+  shell: |
+    pgrep nginx && nginx -s reload || nginx
+    systemctl start trojan@server
+    systemctl start trojan@client

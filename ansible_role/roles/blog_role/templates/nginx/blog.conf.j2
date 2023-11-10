@@ -1,0 +1,62 @@
+server {
+    # SSL configuration
+    listen 443 ssl default_server;
+    # listen [::]:443 ssl;
+
+    server_name www.{{blog_domain}};
+	
+    # 证书路径指定好，稍后将证书放到此处
+    ssl_certificate {{nginx_ssl_path}}/{{blog_domain}}.cer;
+    ssl_certificate_key  {{nginx_ssl_path}}/{{blog_domain}}.key;
+    
+    ssl_session_cache shared:SSL:1m;
+    ssl_session_timeout  5m;  
+    ssl_protocols SSLv3 TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers  HIGH:!ADH:!EXPORT56:RC4+RSA:+MEDIUM;
+    ssl_prefer_server_ciphers on;
+
+    location / {
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   Host $http_host;
+        
+        # 反向代理到hexo监听的地址和端口上
+        proxy_pass         http://127.0.0.1:4000;
+    }
+    
+    location ~ \.(png|jpeg|jpg|bmp|gif)$ {
+      root html/blog;
+    }
+
+    location ~ \.pdf$ {
+       root html/blog;
+    }
+
+    access_log  /var/log/nginx/blog.access.log  main;
+
+    # redirect server error pages to the static page /40x.html
+    #
+    error_page  404              /404.html;
+        location = /40x.html {
+    }
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+    }
+}
+
+# http的方式重定向到https
+server {
+    listen 80 default_server;
+    server_name www.{{blog_domain}};
+    #return 301 https://$server_name$request_uri;
+    return 301 https://www.{{blog_domain}}$request_uri;
+}
+
+
+# 无效主机的访问，报错
+server {
+    server_name "";
+    return 444;
+}

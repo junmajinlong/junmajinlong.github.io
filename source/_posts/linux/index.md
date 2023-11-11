@@ -77,10 +77,10 @@ Linux基础pdf版v3：[Linux基础千锤百炼.pdf](/files/Linux_v3.pdf)
 <td><ul>
 <li>4.<a href="/linux/dhcp" target="_blank">Linux DHCP服务</a></li>
 <li>5.无人值守批量安装Linux操作系统<br>
-  5.1 <a href="http://www.cnblogs.com/f-ck-need-u/p/6442024.html" target="_blank">PXE+kickstart安装CentOS 6</a><br>
-  5.2 <a href="http://www.cnblogs.com/f-ck-need-u/p/7342022.html" target="_blank">kickstart文件详解</a><br>
-  5.3 <a href="http://www.cnblogs.com/f-ck-need-u/p/7342919.html" target="_blank">PXE+kickstart安装CentOS 7</a><br>
-  5.4 <a href="http://www.cnblogs.com/f-ck-need-u/p/7347883.html" target="_blank">cobbler安装Linux系统</a><br>
+  5.1 <a href="/linux/pxe_centos6" target="_blank">PXE+kickstart安装CentOS 6</a><br>
+  5.2 <a href="/linux/kickstart_config" target="_blank">kickstart文件详解</a><br>
+  5.3 <a href="/linux/pxe_centos7" target="_blank">PXE+kickstart安装CentOS 7</a><br>
+  5.4 <a href="/linux/cobbler" target="_blank">cobbler安装Linux系统</a><br>
 </li>
 <li>6.数据包过滤和防火墙<br>
   6.1 <a href="/linux/tcpwrapper" target="_blank">tcp_wrapper过滤</a><br>
@@ -116,7 +116,7 @@ Linux基础pdf版v3：[Linux基础千锤百炼.pdf](/files/Linux_v3.pdf)
 - [加密、签名和SSL握手机制细节(精)](/linux/ssl_details)
 - [openssl命令用法详解](/linux/openssl_subcmds)
 - [openssl申请证书、颁发证书、自建CA](/linux/openssl_ca)
-- [SSL官方书籍](https://junmajinlong.lanzouj.com/iW6t31e7tzcj)
+- [SSL官方书籍下载](https://junmajinlong.lanzouj.com/iW6t31e7tzcj)
 
 
 <a name="others"></a>

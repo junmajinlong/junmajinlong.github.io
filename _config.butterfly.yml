@@ -15,45 +15,45 @@ menu:
   # 分类: /categories/ || fas fa-folder-open
   分类: /categories/
   # 系统性教程:  
-   # - 视频教程 || /videos/index/  
+   # - 视频教程 || /videos/index  
    # - 一步到位玩透Ansible || /ansible/index/  
    # - 学会Perl || https://perl-book.junmajinlong.com/  
    # - 学会Rust || https://rust-book.junmajinlong.com/
    # - 学会systemd || https://systemd-book.junmajinlong.com/  
-  视频教程: /videos/index/  
+  视频教程: /videos/index  
   Linux:  
-    Linux基础: /linux/index/  
-    systemd系列: /linux/index#systemd/  
-    openssl系列: /linux/index#blogopenssl/  
-    ssh系列:      /linux/index#blogservice/  
-    rsync系列:     /linux/index#blogservice/  
-    dns:      /linux/index#blogservice/  
-    iptables:     /linux/index#blogservice/  
-    namespace:  /virtual/index/#linux-namespace/
+    Linux基础: /linux/index  
+    systemd系列: /linux/index#systemd  
+    openssl系列: /linux/index#blogopenssl  
+    ssh系列:      /linux/index#blogservice  
+    rsync系列:     /linux/index#blogservice  
+    dns:      /linux/index#blogservice  
+    iptables:     /linux/index#blogservice  
+    namespace:  /virtual/index/#linux-namespace
   Shell:  
-    Shell全面掌握教程: /shell/index/  
-    正则表达式:   /regexp/index/  
+    Shell全面掌握教程: /shell/index  
+    正则表达式:   /regexp/index  
     sed教程: /shell/index#sed+awk  
     Awk教程:  /shell/awk/index  
-  MySQL: /mysql/index/
-  web架构: /web_architecture/index/
-  操作系统: /os/index/
+  MySQL: /mysql/index
+  web架构: /web_architecture/index
+  操作系统: /os/index
   Ansible: 
-    一步到位玩透Ansible:  /ansible/index/  
+    一步到位玩透Ansible:  /ansible/index  
   编程语言: 
-    Rust: /rust/index/
+    Rust: /rust/index
     Rust书:  https://rust-book.junmajinlong.com/
-    Ruby:  /ruby/index/
-    Perl:  /perl/index/
+    Ruby:  /ruby/index
+    Perl:  /perl/index
     Perl书:  https://perl-book.junmajinlong.com/  
-    Python:  /python/index/
-    Golang:  /golang/index/
-    Lua: /lua/index/
-  编程通识: /categories/Coding/
+    Python:  /python/index
+    Golang:  /golang/index
+    Lua: /lua/index
+  编程通识: /categories/Coding
   其它:
     Vagrant: /virtual/index#vagrant
-    "Windows WSL": /categories/Others/windows/wsl/
-  低价VPS: /others/vps/
+    "Windows WSL": /categories/Others/windows/wsl
+  低价VPS: /others/vps
   # Home: / || fas fa-home
   # Archives: /archives/ || fas fa-archive
   # Tags: /tags/ || fas fa-tags

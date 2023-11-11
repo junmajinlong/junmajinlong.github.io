@@ -75,7 +75,7 @@ Linux基础pdf版v3：[Linux基础千锤百炼.pdf](/files/Linux_v3.pdf)
 </li>
 </ul></td>
 <td><ul>
-<li>4.<a href="http://www.cnblogs.com/f-ck-need-u/p/7324199.html" target="_blank">DHCP服务</a></li>
+<li>4.<a href="/linux/dhcp" target="_blank">Linux DHCP服务</a></li>
 <li>5.无人值守批量安装Linux操作系统<br>
   5.1 <a href="http://www.cnblogs.com/f-ck-need-u/p/6442024.html" target="_blank">PXE+kickstart安装CentOS 6</a><br>
   5.2 <a href="http://www.cnblogs.com/f-ck-need-u/p/7342022.html" target="_blank">kickstart文件详解</a><br>

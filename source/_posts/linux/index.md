@@ -83,7 +83,7 @@ Linux基础pdf版v3：[Linux基础千锤百炼.pdf](/files/Linux_v3.pdf)
   5.4 <a href="http://www.cnblogs.com/f-ck-need-u/p/7347883.html" target="_blank">cobbler安装Linux系统</a><br>
 </li>
 <li>6.数据包过滤和防火墙<br>
-  6.1 <a href="http://www.cnblogs.com/f-ck-need-u/p/7347987.html" target="_blank">tcp_wrapper过滤</a><br>
+  6.1 <a href="/linux/tcpwrapper" target="_blank">tcp_wrapper过滤</a><br>
   6.2 <a href="http://www.cnblogs.com/f-ck-need-u/p/7397146.html" target="_blank">防火墙和iptables</a><br>
   6.3 firewalld(待补充)<br>
 </li>

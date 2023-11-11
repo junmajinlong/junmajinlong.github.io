@@ -1,7 +1,7 @@
 ---
 title: tcp_wrapper网络服务的访问控制
 p: linux/tcpwrapper.md
-date: 2021-04-15 14:17:18
+date: 2020-04-15 14:17:18
 tags: Linux
 categories: Linux
 ---

@@ -419,4 +419,4 @@ logvol /data --fstype ext4 --name=LVdata --vgname=VG00 --size=100 --grow
 
 
 
-[1]: /linux/kickstart_config	"kickstart配置文件详解"
+[1]: /linux/kickstart_config

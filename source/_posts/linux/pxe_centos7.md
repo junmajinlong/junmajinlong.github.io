@@ -505,5 +505,5 @@ label linux
 
 
 
-[1]: /linux/pxe_centos6	"PXE+Kickstart安装CentOS6"
-[2]: /linux/kickstart_config "kickstart配置文件"
+[1]: /linux/pxe_centos6
+[2]: /linux/kickstart_config

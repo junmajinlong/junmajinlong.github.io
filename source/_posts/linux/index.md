@@ -160,9 +160,8 @@ Linux基础pdf版v3：[Linux基础千锤百炼.pdf](/files/Linux_v3.pdf)
 </tr>
 </tbody>
 </table>
-
-
 <a name="mytranslations"></a>
+
 # 我的个人翻译
 
 - [翻译：grub2详解(翻译和整理官方手册)](/linux/grub2)  
@@ -175,3 +174,4 @@ Linux基础pdf版v3：[Linux基础千锤百炼.pdf](/files/Linux_v3.pdf)
 - [翻译：info grep(grep命令中文手册)](/shell/grep_translate)  
 - [翻译：info sed(sed命令中文手册 + 注解)](/shell/sed2)
 - [翻译：man getopt(1)中文手册](/shell/getopt_translate)
+

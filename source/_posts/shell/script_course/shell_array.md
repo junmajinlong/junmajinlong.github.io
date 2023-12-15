@@ -120,8 +120,8 @@ $ echo $arr  # 11
 
 ```bash
 $ arr=(11 22 33)
-$ printf "%s " "${arr[@]}"
-$ declare -p arr
+$ printf "%s " "${arr[@]}"   # 输出：11 22 33
+$ declare -p arr # 输出：declare -a arr=([0]="11" [1]="22" [2]="33")
 ```
 
 ## 定义、访问关联数组
@@ -174,27 +174,6 @@ $ echo ${!arr[*]}
 ```shell
 $ echo ${#arr[@]}
 $ echo ${#arr[*]}
-```
-
-## 扩展数组和删除数组元素
-
-Bash中可使用`+=`操作符向数值索引的数组中添加元素或者扩展数组。
-
-```bash
-$ arr=(1 2 3)
-$ arr+=(11 22)  # 数组尾部追加两个元素，arr现在为(1 2 3 11 22)
-$ declare -p arr
-declare -a arr=([0]="1" [1]="2" [2]="3" [3]="11" [4]="22")
-$ arr+=('hello world')
-$ declare -p arr
-declare -a arr=([0]="1" [1]="2" [2]="3" [3]="11" [4]="22" [5]="hello world")
-```
-
-使用`unset`删除数组中的元素：
-
-```bash
-unset arr[1]  # 删除第二个元素
-unset arr[-1] # 删除最后一个元素
 ```
 
 ## 向shell函数传递数组引用

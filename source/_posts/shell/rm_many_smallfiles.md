@@ -90,10 +90,14 @@ user    0m3.104s
 sys     3m59.286s
 
 # 4个rm进程(我只有4核)，每次删20000个文件
+# 和-n的数量也有关系
 $ time bash -c 'find /tmp/temp/ -type f -print0 | xargs -0 -P4 -n20000 rm -rf'     
 
 real    0m12.746s
 user    0m0.282s
 sys     0m19.133s
+
+# 直接使用find -delete，相比xargs -P，可能更快，可能更慢，跟find版本有关
+$ time bash -c 'find /tmp/temp -type f -delete'
 ```
 

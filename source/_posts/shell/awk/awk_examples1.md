@@ -67,6 +67,6 @@ ifconfig | awk '/inet / && !($2 ~ /^127/){print $2}'
 ifconfig | awk 'BEGIN{RS=""}!/lo/{print $6}'
 
 # 3.法三：按段落读取，每行1字段，然后取IPv4字段
-ifconfig | awk 'BEGIN{RS="";FS="\n"}!/lo/{$0=$2;FS=" ";$0=$0;print $2}'
+ifconfig | awk 'BEGIN{RS="";FS="\n"}!/lo/{$0=$2;FS=" ";$0=$0;print $2;FS="\n"}'
 ```
 

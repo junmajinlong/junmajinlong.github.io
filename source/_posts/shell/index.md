@@ -130,6 +130,10 @@ categories: Shell
 - 1.[shell高效处理文本(1)：xargs并行处理](/shell/xargs_parallel)(精)  
 - 2.GNU Parallel  
 
+# Shell文件锁
+
+- [理解和使用文件锁flock命令](/shell/flock)
+
 # 其它常用命令
 
 - [dd、split和csplit命令](/shell/dd_split_csplit)  

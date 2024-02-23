@@ -322,3 +322,104 @@ for i in ${!aarr[@]};do
   echo count: ${aarr[$i]}
 done
 ```
+
+
+## 判断数组中是否存在某元素
+
+在Bash中没有直接判断数组中是否存在某元素的方式，但是可以遍历数组并比较每个元素来判断，虽然麻烦，但是也不难。
+
+例如：
+```shell
+# 判断数组中是否存在abc元素
+arr=("abc" "def" "abc defg")
+for v in "${arr[@]}";do 
+  if [ "${v}" == "abc" ];then
+    echo "yes"
+    break
+  fi
+done
+```
+
+可以将该功能定义为函数：
+```shell
+# 第一个参数为数组名，第二个参数为要判断是否存在的值
+# 返回0表示存在，返回1表示不存在
+# 第二个参数为空时，也认为存在，返回0
+function arr_contains() {
+    [ $# -eq 0 ] && {
+        echo "argument error"
+        exit 2
+    }
+
+    [ $# -eq 1 ] && return 0
+
+    declare -n _arr="$1"
+    declare v="$2"
+    local elem
+
+    for elem in "${_arr[@]}";do
+        [ "$elem" == "$v" ] && return 0
+    done
+
+    return 1
+}
+
+export -f arr_contains
+```
+
+## 使用Shell数组保存命令行的选项
+
+在Shell中，数组一个很常用的功能是保存某个命令的动态选项。
+
+有时候要执行的命令选项可能是动态定义的，比如在某种条件下才添加某个选项，在另一个条件下添加另一个选项，通常会定义一个字符串变量，并在各种条件判断下将对应的选项和参数动态追加到该字符串变量中，但这需要精确掌握引号的使用规则，否则容易出错。这时候用Shell的数组很友好。
+
+例如，动态定义rsync的`--exclude`选项，并假设rsync总是带有`-avz`选项。下面给出两种动态定义选项的方式。
+
+1.使用字符串变量动态保存rsync选项：
+```shell
+rsync_opt="-avz"
+while [ $# -ge 1 ];do 
+  case "$1" in 
+    "--no-log") 
+      rsync_opts="$rsync_opts --exclude='*.log'"
+      shift
+      ;;
+    "--no-lock") 
+      rsync_opts="$rsync_opts --exclude='*.lock'"
+      shift
+      ;;
+    *)
+      :
+  esac
+done
+
+# 下面的$rsync_opt一定不能使用双引号
+rsync $rsync_opt <SRC> <DEST>
+```
+
+2.使用数组保存rsync选项:
+```shell
+rsync_opts=(-avz)
+while [ $# -ge 1 ];do 
+  case "$1" in 
+    "--no-log") 
+      rsync_opts+=(--exclude='*.log')
+      shift
+      ;;
+    "--no-lock") 
+      rsync_opts+=(--exclude='*.lock')
+      shift
+      ;;
+    *)
+      :
+  esac
+done
+
+rsync "${rsync_opts[@]}" <SRC> <DEST>
+```
+
+如果某个选项带参数，或者一次性要添加多个选项或参数，可：
+```shell
+opts+=(-o arg)
+opts+=(arg1 arg2)
+```

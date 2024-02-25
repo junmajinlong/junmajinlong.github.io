@@ -71,7 +71,7 @@ categories: Shell
 <a name="cmd_opts"></a>
 # shell脚本命令行选项设计
 
-- 1.[使用bashly构建bash脚本命令行](/shell/use_bashly)  
+- 1.[使用bashly构建bash脚本命令行](/shell/bashly)  
 - 2.[getopt设计shell脚本选项(精)](/shell/getopt)  
 - 3.[man getopt中文手册(翻译)](/shell/getopt_translate)  
 

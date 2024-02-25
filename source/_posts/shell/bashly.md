@@ -1,6 +1,6 @@
 ---
 title: 使用bashly构建bash脚本命令行
-p: shell/use_bashly.md
+p: shell/bashly.md
 date: 2022-09-17 18:20:43
 tags: Shell
 categories: Shell
@@ -221,29 +221,10 @@ $ tree .
 
 除了download外，还生成了root_command.sh和initialize.sh两个文件。
 
-initialize.sh是用来初始化的，在download中调用任何函数之前，会先执行这个文件中的命令。看bashly生成的download文件中执行逻辑：
+- initialize.sh中编写用于环境初始化的shell代码
+- root_command.sh中编写该命令行的本身逻辑
 
-```bash
-# :command.initialize
-initialize() {
-  version="0.1.0"
-  long_usage=''
-  set -e
-
-  # initialize.sh文件中的内容将被拷贝到此处
-  # src/initialize.sh       
-}
-
-# :command.run
-run() {
-  ......
-}
-
-initialize
-run "$@"
-```
-
-initialize.sh文件初始时是空的(只有一些注释行)。
+initialize.sh文件初始时是空的(只有一些注释行)。需注意，所有`##`开头的被认为是bashly的注释信息，是完全被忽略的，而只有一个`#`的注释行，将会被写入download文件。
 
 ```bash
 ## Code here runs inside the initialize() function
@@ -254,11 +235,9 @@ initialize.sh文件初始时是空的(只有一些注释行)。
 ## Feel free to empty (but not delete) this file.
 ```
 
-> 需注意，所有`##`开头的被认为是bashly的注释信息，是完全被忽略的，而那些只有一个`#`的行，会被写入download文件。
+> 注：新版本的bashly不会主动生成initialize.sh，请参考下文[Bashly Hook](#bashly_hook)关于initialize.sh的更多说明。
 
-比如可以在initialize.sh中来设置脚本内部运行的环境变量，因为环境变量的设置一般要优先于逻辑的运行。注意，initialize.sh文件不能被删除。
-
-再看另一个root_command.sh文件。root_command.sh文件就是填充命令行运行逻辑的地方。该文件的初始内容：
+再看root_command.sh文件。root_command.sh文件就是填充命令行运行逻辑的地方。该文件的初始内容：
 
 ```bash
 echo "# this file is located in 'src/root_command.sh'"
@@ -266,7 +245,7 @@ echo "# you can edit it freely and regenerate (it will not be overwritten)"
 inspect_args
 ```
 
-两个`echo`命令和一个`inspect_args`命令，`inspect_args`命令是bashly自动生成的用来查看选项和值信息的函数，它被定义在`download`文件中。
+两个`echo`命令和一个`inspect_args`命令，`inspect_args`命令是bashly自动生成的用来查看选项和值信息的函数，该函数被定义在`download`文件中。
 
 root_command.sh文件的内容在每次执行`bashly generate`的时候都会自动填充到`download`文件中。因此，在没有对root_command.sh文件做出任何修改的时候，执行download命令的输出结果正是这里初始化的内容：
 
@@ -359,7 +338,7 @@ run "$@"
 
 > 注意，在本示例中生成的download文件中没有填充`other_args`数组的代码，因为本示例的download命令不允许额外参数。如果要允许额外参数，需在配置文件中使用`catch_all`指令。后文会介绍该指令。
 
-当需要编写自己的命令行选项逻辑时，应该将相关的逻辑填充到`src/root_command.sh`文件中，在这过程中，最重要的就是从`args`数组获取选项和参数的值。
+当需要编写自己的命令行选项逻辑时，应该将相关的逻辑填充到`src/root_command.sh`文件中，在这过程中，最重要的就是从名为`args`的数组获取选项和参数的值。
 
 ## bashly如何定义Command
 
@@ -537,6 +516,8 @@ $ tree .
     └── sub2_command.sh  # sub2子命令的逻辑，写在这个文件中
 ```
 
+由于定义了子命令而没有定义父命令，因此没有生成root_command.sh文件。
+
 ### alias指令：子命令别名
 
 alias指令定义子命令的别名，只能用于子命令中。
@@ -650,7 +631,6 @@ Options:
   --version, -v
     Show version number
 ```
-
 
 ### 嵌套子命令
 
@@ -1028,11 +1008,12 @@ bashly通过`flags`指令定义选项，在`flags`指令之下，支持下面这
 - `short`：指定短选项的名称(和long至少提供一个)  
 - `help`：选项说明
 - `arg`：如果选项需要参数，加上该指令，该指令指定参数显示名称。不加该指令，则表示选项不需要参数  
-- `default`：为该选项指定默认的参数值，需同时指定`arg`指令，不能和`required`共存  
-- `required`：该选项是否必须存在，设置为false(默认)表示该选项可以省略，不能和`default`共存  
-- `allowed`：一个数组，该选项的参数的值必须是该数组中的一个，需同时指定`arg`指令，且隐含了`required: true`  ，因此使用该功能，意味着该选项必须指定    
+- `default`：为该选项指定默认的参数值，需同时指定`arg`指令  
+- `required`：该选项是否必须存在，设置为false(默认)表示该选项可以省略  
+- `allowed`：一个数组，该选项的参数的值必须是该数组中的一个，需同时指定`arg`指令，可同时结合default或required指令来使用  
 - `conflicts`：一个数组，明确指定该选项和哪些选项冲突，即不能和哪些选项共存。使用该指令时，应当在所有互相冲突的选项上都指定该指令  
-- `repeatable`：该选项可以重复出现多次，如果使用短选项没有参数，则可以结合，例如`-v -v`等价于`-vv`，长选项或者带有参数时，必须分开多次指定，例如`--f1 --f1`和`-v v1 -v v2`。参考<https://bashly.dannyb.co/configuration/flag/#repeatable)>  
+- `repeatable`：该选项可以重复出现多次，如果使用短选项没有参数，则可以结合，例如`-v -v`等价于`-vv`，长选项或者带有参数时，必须分开多次指定，例如`--f1 --f1`和`-v v1 -v v2`。当带有参数时，各参数将以引号包围并空格分隔，因此应通过类似于`eval "datas=(${args[--data]})"`的方式将各参数提取出来保存在另一个数组中，然后访问该数组获取各值。参考<https://bashly.dannyb.co/configuration/flag/#repeatable)>  
+- `unique`：必须配合`repeatable`指令使用，且该选项必须带参数，即含有`arg`指令。指定该指令时，如果重复选项的参数值也重复了，将忽略所有重复参数值  
 - `validate`：对参数进行验证，需同时指定`arg`指令。如何进行验证，参考后文[validate：验证参数](#validate)。
 
 当选项带有参数时，传递参数时，下面两种方式是等价的：
@@ -1048,10 +1029,11 @@ bashly通过`args`指令定义参数，在`args`指令之下，支持下面这�
 
 - `name`：指定参数名称  
 - `help`：参数说明
-- `default`：指定默认的参数值，意味着该参数可选，不能和`required`共存  
-- `required`：该参数是否必须存在，设置为false(默认)表示可以省略，不能和`default`共存  
-- `allowed`：一个数组，该选项的参数的值必须是该数组中的一个  
-- `repeatable`：该参数可以重复出现多次，参考<https://bashly.dannyb.co/configuration/argument/#repeatable>  
+- `default`：指定默认的参数值，意味着该参数可选  
+- `required`：该参数是否必须存在，设置为false(默认)表示可以省略  
+- `allowed`：一个数组，该选项的参数的值必须是该数组中的一个，可以结合`default`指令或`required`指令  
+- `repeatable`：该参数可以重复出现多次，各参数将被被引号包围并以空格分隔，因此应使用类似于`eval "datas=(${args[data]})"`的方式将这些参数提取出来并保存在另一个数组datas中。参考<https://bashly.dannyb.co/configuration/argument/#repeatable>  
+- `unique`：该指令需结合`repeatable`指令同时使用，指定该指令时，将忽略多余的值相同的重复参数值
 - `validate`：对参数进行验证。如何进行验证，参考后文[validate：验证参数](#validate)。
 
 ## filters指令：前置筛选条件
@@ -1149,6 +1131,175 @@ cyan        cyan_bold     cyan_underlined
 bold
 underlined
 ```
+
+<a name="bashly_hook"></a>
+
+## bashly Hook
+
+bashly允许用户编写钩子(Hook)使得一些逻辑能够在特定的时间点被执行。
+
+通过`bashly add hooks`命令将生成3个hook文件，它们分别在三种时间点被执行：
+
+- src/initialize.sh：该脚本文件中定义的内容全都会被写入initialize()函数中，这些代码将会在任何逻辑执行之前被执行，通常用于定义全局变量、全局函数、全局设置等操作  
+- src/before.sh：该脚本文件中编写的代码将会在解析完命令行选项参数之后，且在命令行执行之前被执行  
+- src/after.sh：该脚本文件中编写的代码将会在执行完命令行之后被执行
+
+这些文件也可以手动创建，并且可以删除不需要的hook sh文件，比如可以只保留src/initialize.sh文件用来做全局初始化，可删除或不创建src/before.sh和src/after.sh文件。
+
+initialize.sh通常用来做环境初始化，在调用任何函数之前会先执行这个文件中的命令，使得其它小文件中(包括src/lib目录下的库函数文件)都能访问这些全局变量。看bashly生成的最终脚本文件中执行逻辑：
+
+```bash
+# :command.initialize
+initialize() {
+  version="0.1.0"
+  long_usage=''
+  # 默认设置了set -e，意味着脚本中只要存在退出状态码非0的命令时就会退出整个脚本
+  # 如果想要更改bashly的这种行为，参考下文"设置bashly的工作方式"的相关内容
+  set -e
+
+  # initialize.sh文件中的内容将被拷贝到此处
+  # src/initialize.sh       
+}
+
+# :command.run
+run() {
+  ......
+}
+
+initialize
+run "$@"
+```
+
+initialize.sh文件初始时是空的(只有一些注释行)。
+
+```bash
+## Code here runs inside the initialize() function
+## Use it for anything that you need to run before any other function, like
+## setting environment vairables:
+## CONFIG_FILE=settings.ini
+##
+## Feel free to empty (but not delete) this file.
+```
+
+比如可以在initialize.sh中来设置脚本内部运行的全局变量。
+
+```shell
+# src/initialize.sh
+
+MAIN_IP="192.168.200.100"
+RUNTIME_DIR="/data"
+
+# 通过 declare 定义全局变量时，记得使用-g选项
+declare -g -A IPS
+```
+
+注意，bashly中如果想要通过declare定义全局数组(或全局变量)，一定记得加上`-g`选项。这是因为在bashly的任何有效文件中的自定义代码都会被bashly重新以函数的方式包裹写入最终生成的命令脚本文件中，比如initialize.sh中的代码将会被写入initialize()函数内。而在函数内部declare不使用`-g`选项时，它默认定义的是函数内的局部变量，这样src下的其它文件将无法访问该全局变量。
+
+## 设置bashly自身工作方式
+
+如果不做任何修改，bashly将以默认方式工作，但是这些工作方式可以修改。
+
+通过`bashly add settings`命令将在根目录下生成settings.yml文件：
+
+```
+❯ tree
+.
+├── settings.yml
+├── src
+│   ├── bashly.yml
+│   ├── initialize.sh
+│   ├── lib
+│   │   └── colors.sh
+│   └── my_sub_command.sh
+└── trade.sh
+```
+
+settings.yml文件中已经定义好默认的工作方式，可以修改这些配置项：
+
+```yaml
+# All settings are optional (with their default values provided below), and
+# can also be set with an environment variable with the same name, capitalized
+# and prefixed by `BASHLY_` - for example: BASHLY_SOURCE_DIR
+#
+# When setting environment variables, you can use:
+# 某个配置项设置为 0 flase no 是等价的，都代表布尔 false
+# 某个配置项设置为 1 true yes 是等价的，都代表布尔 true
+# 某个配置项设置为 ~ 时表示设置为 null 或 nil
+# - "0", "false" or "no" to represent false
+# - "1", "true" or "yes" to represent true
+#
+# If you wish to change the path to this file, set the environment variable
+# BASHLY_SETTINGS_PATH.
+
+# 源代码文件所在目录
+# The path containing the bashly source files
+source_dir: src
+
+# bashly.yml的路径
+# The path to bashly.yml
+config_path: "%{source_dir}/bashly.yml"
+
+# 最终生成的命令行脚本脚本文件的目录
+# The path to use for creating the bash script
+target_dir: .
+
+# 库函数lib的目录路径
+# The path to use for common library files, relative to source_dir
+lib_dir: lib
+
+# bashly生成的sh文件所在路径，比如在何处创建/读取root_command.sh文件
+# 设置为空`~`时，表示在source_dir下生成这些小文件
+# The path to use for command files, relative to source_dir
+# When set to nil (~), command files will be placed directly under source_dir
+# When set to any other string, command files will be placed under this
+# directory, and each command will get its own subdirectory
+commands_dir: ~
+
+# 默认bashly会设置set -e，意味着命令行脚本中遇到非0退出状态码时退出整个脚本
+# 该配置项配置为`''`时，bashly将不会设置set -e
+# 也可以设置其它值
+# Configure the bash options that will be added to the initialize function:
+# strict: true       Bash strict mode (set -euo pipefail)
+# strict: false      Only exit on errors (set -e)
+# strict: ''         Do not add any 'set' directive
+# strict: <string>   Add any other custom 'set' directive
+strict: false
+
+# When true, the generated script will use tab indentation instead of spaces
+# (every 2 leading spaces will be converted to a tab character)
+tab_indent: false
+
+# When true, the generated script will consider any argument in the form of
+# `-abc` as if it is `-a -b -c`.
+compact_short_flags: true
+
+# Set to 'production' or 'development':
+# env: production    Generate a smaller script, without file markers
+# env: development   Generate with file markers
+env: development
+
+# The extension to use when reading/writing partial script snippets
+partials_extension: sh
+
+# Display various usage elements in color by providing the name of the color
+# function. The value for each property is a name of a function that is
+# available in your script, for example: `green` or `bold`.
+# You can run `bashly add colors` to add a standard colors library.
+# This option cannot be set via environment variables.
+usage_colors:
+  caption: ~
+  command: ~
+  arg: ~
+  flag: ~
+  environment_variable: ~
+```
+
+## 使用bashly时需谨记在心的注意事项
+
+- 所有自定义的代码都会被bashly重新包裹在bashly生成的shell函数中，因此要记得在使用declare定义全局变量时加上`-g`选项。  
+- 能不使用here document就不要使用here document，而是改用多行echo的方式，bashly中使用here document的限制很大。
+- 默认bashly会设置`set -e`，使得命令行脚本中只要遇到退出状态码非0时就退出，如果想要改变这种行为，应设置bashly的工作方式，参考前文相关内容。
+- 除了初始化脚本(initialize.sh)中，其它脚本文件中尽量手动明确地定义局部变量，这是因为bashly最终生成的命令行脚本可能是由比较多的小文件组合而成的，如果定义的不是局部变量，很可能会修改或读取到其它小文件中定义的同名变量。要在小文件中定义局部变量，函数内可以使用local或declare，函数外可以使用declare。
 
 ## 较为复杂的命令行选项解析示例
 

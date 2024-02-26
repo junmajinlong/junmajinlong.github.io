@@ -52,7 +52,7 @@ man lsns        # 查看当前已创建的namespace
 Linux namespace是在当前运行的系统环境中创建(隔离)另一个进程的运行环境出来，并在此运行环境中将一些必要的系统全局资源进行【虚拟化】。进程可以运行在指定的namespace中，因此，namespace中的每个进程都认为自己拥有所有这些虚拟化的全局资源。
 
 目前，Linux已经支持8种全局资源的虚拟化(每种资源都是随着Linux内核版本的迭代而逐渐加入的，因此有些内核版本可能不具备某种namespace)：  
-- cgroup namespace：该namespace可单独管理自己的cgroup  
+- cgroup namespace：该namespace可单独管理自己的cgroup，cgroup可用于限制进程的资源使用量(比如CPU、内存、网络带宽)  
 - ipc namespace：该namespace有自己的IPC，比如共享内存、信号量等  
 - network namespace：该namespace有自己的网络资源，包括网络协议栈、网络设备、路由表、防火墙、端口等  
 - mount namespace：该namespace有自己的挂载信息，即拥有独立的目录层次  
@@ -68,6 +68,8 @@ Linux namespace是在当前运行的系统环境中创建(隔离)另一个进程
 用户可以创建指定类型的namespace并将程序放入该namespace中运行，这表示从当前的系统运行环境中隔离一个进程的运行环境，在此namespace中运行的进程将认为自己享有该namespace中的独立资源。
 
 实际上，即使用户没有手动创建Linux namespace，Linux系统开机后也会创建一个默认的namespace，称为**root namespace**，所有进程默认都运行在root namespace中，每个进程都认为自己拥有该namespace中的所有系统全局资源。
+
+当创建额外的命名空间后，进程将只能看到该命名空间下的资源。当然，由于存在多种类型的命名空间，所以⼀个进程不单单只属于某⼀个命名空间，⽽属于每个类型的⼀个命名空间，该进程能看到的也是它所属于的各类命名空间中的资源。
 
 回顾一下Linux的开机启动流程，内核加载成功后将初始化系统运行环境，这个运行环境就是root namespace环境，系统运行环境初始化完成后，便可以认为操作系统已经开始工作了。
 

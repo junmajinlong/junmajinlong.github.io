@@ -20,7 +20,7 @@ categories: Virtualization
 
 # 理解uts namespace
 
-uts(UNIX Time-Sharing System) namespace可隔离hostname和NIS Domain name资源，使得一个宿主机可拥有多个主机名或Domain Name。换句话说，可让不同namespace中的进程看到不同的主机名。
+uts(UNIX Time-Sharing System) namespace可隔离hostname和NIS Domain name资源，使得一个宿主机可拥有多个主机名或Domain Name。换句话说，可让不同namespace中的进程看到不同的主机名(换句话说，至少在主机名这方面，可以让进程认为自己是运行在独立的操作系统中）。
 
 例如，使用unshare命令(较新版本Linux内核还支持nscreate命令)创建一个新的uts namespace：
 ```bash

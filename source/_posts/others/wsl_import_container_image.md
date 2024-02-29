@@ -1,7 +1,7 @@
 ---
 title: 导入任何Linux系统容器镜像到wsl
 p: others/wsl_import_container_image.md
-date: 2020-10-06 18:20:41
+date: 2024-02-29 10:20:41
 tags: [Others,windows,wsl]
 categories: [Others,windows,wsl]
 ---

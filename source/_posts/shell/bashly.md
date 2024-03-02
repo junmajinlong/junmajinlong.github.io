@@ -1299,72 +1299,34 @@ usage_colors:
 
 bashly支持为最终生成的命令添加命令行的`TAB`键自动补全和提示功能，非常人性化。
 
-设置也非常简单，只需执行`bashly add completions`命令，这将会生成`src/lib/send_comletions.sh`文件，bashly将命令行自动补全和提示的相关代码生成在此文件的`send_completions`函数中。以后只要修改了bashly.yml文件，只需再执行`bashly generate --upgrade`就会自动更新send_completions函数(也可以先执行bashly generate再执行bashly add completions)。
+设置也非常简单：
 
-然后，在bashly.yml的各个你想要提供自动补全功能的子命令、参数下加上`completions`指令即可。例如：
-
+1.在bashly.yml中添加一个额外的子命令或选项，用于开启该命令行的自动补全功能。
 ```yml
-name: trade.sh
-help: Manage AutoTrade Processes and Some Utils
-version: 0.1.0
-
-# 在--help帮助信息的最下面Footer处提示用户如何开启自动补全功能
-footer: |
-  You can append the following line into ~/.bashrc and then re-login bash to set bash completions
-      eval "\$(trade.sh completions)"
-
 commands:
-  # 额外提供一个completions子命令给用户，并将`eval "$(trade.sh completions)"`
+  # 额外提供一个completions子命令给用户，并将`eval "$(cli completions)"`
   # 添加到.bashrc中实现每次重启bash就开启自动补全功能
   - name: completions
     help: create script completions
-    # 将该子命令隐藏起来
+    # 可以考虑将该子命令从帮助信息中隐藏起来
     private: true
-
-  - name: run
-    alias: r
-    help: Start/Kill/Restart/Show AutoTrade Process
-    group: Process
-    # 在需要开启自动补全的子命令上添加`completions`指令，
-    # 按TAB键时将会提示命令自身和命令别名。
-    # <...>内的字符会在tab键时被识别并尝试补全。
-    # 开启了自动补全的命令下的长短选项会自动开启补全和提示。
-    completions:
-      - <run>
-    commands:
-      - name: kill
-        help: Kill Process
-        # completions指令下可以给多个补全提示
-        completions:
-          - <kill>
-        args:
-          - name: proc
-            help: which process to kill
-            required: false
-            repeatable: true
-            unique: true
-            # 参数位上可以设置completions指令，但使用allowed时会自动将允许的参数列表开启自动补全和提示
-            allowed: [ks,os,au,ct,all]
 ```
+2.执行`bashly add completions`命令，该命令总是会根据bashly.yml的内容生成自动补全和提示的代码，并将它们写入`src/lib/send_comletions.sh`文件中的`send_completions`函数中。
 
-然后执行`bashly generate --upgrade`，bashly会自动将命令补全和提示相关的代码更新到`src/lib/send_completions.sh`文件中的send_completions函数，只需调用这个函数就可以在当前shell环境下开启自动补全功能。为了方便且每次登录bash后自动开启自动补全，在bashly.yml中额外添加了一个子命令`completions`，bashly会为该子命令生成一个completions_command.sh的文件，在该文件中调用send_completions函数：
+所以，任何时候如果更新了bashly.yml文件中的子命令、选项、参数时，都应该执行该命令重新生成、更新自动补全代码。
+
+3.执行`bashly generate`。由于前面在bashly.yml中添加了completions子命令，因此这次generate时将创建该子命令对应的脚本文件`src/completions_command.sh`。需要在该文件中调用send_completions函数。
 
 ```shell
-## src/send_completions.sh
-
-## 注释下面的行
-## echo "# this file is located in 'src/completions_command.sh'"
-## echo "# code for 'trade.sh completions' goes here"
-## echo "# you can edit it freely and regenerate (it will not be overwritten)"
-## inspect_args
-
-# 添加这一行
+# src/completions_command.sh文件中的内容
 send_completions
 ```
 
-再执行`bashly generate --upgrade`重新生成一下最终的命令行文件。
+4.再次`bashly generate --upgrade`，这等价于`bashly add completions + bashly generate`命令。
 
-最后，将`eval "$(trade.sh completions)"`添加到家目录的.bashrc文件中并重新登录bash，即可开启trade.sh的自动补全和提示功能。
+5.最后，在命令行下执行`eval "$(./cli completions)"`，执行之后，cli命令行就提供了自动补全和提示的功能。
+
+也可以将`eval "$(cli completions)"`添加到家目录的.bashrc文件中并重新登录bash，即可在每次登录bash时开启cli命令的自动补全和提示功能。
 
 ## 使用bashly时需谨记在心的注意事项
 

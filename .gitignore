@@ -9,4 +9,6 @@ _multiconfig.yml
 utils
 ssl*
 books
+books1
 firewall.ufw
+firewall_1.ufw

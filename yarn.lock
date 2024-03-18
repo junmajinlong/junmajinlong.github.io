@@ -684,6 +684,18 @@ hexo-cli@^4.3.0:
     resolve "^1.20.0"
     tildify "^2.0.0"
 
+hexo-deployer-git@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/hexo-deployer-git/-/hexo-deployer-git-4.0.0.tgz"
+  integrity sha512-28t1Q+4taB/UaBAP52W3mD/wcCwa2y2zBieUfBJFBZudbmVgiKJB5YedYILeyI5QByaUKAOwoupmdTbocdQ+CQ==
+  dependencies:
+    bluebird "^3.7.2"
+    hexo-fs "^4.0.0"
+    hexo-util "^2.7.0"
+    luxon "^3.0.4"
+    nunjucks "^3.2.3"
+    picocolors "^1.0.0"
+
 hexo-front-matter@^3.0.0:
   version "3.0.0"
   resolved "https://registry.npmjs.org/hexo-front-matter/-/hexo-front-matter-3.0.0.tgz"
@@ -700,6 +712,16 @@ hexo-fs@^3.1.0:
     chokidar "^3.0.0"
     graceful-fs "^4.1.11"
     hexo-util "^2.0.0"
+
+hexo-fs@^4.0.0:
+  version "4.1.1"
+  resolved "https://registry.npmjs.org/hexo-fs/-/hexo-fs-4.1.1.tgz"
+  integrity sha512-aDysNTyv8ElcerbFVbPLRXnYt+QDY6gAOZZ5DLbCxudY0Ywppqd+uZ03gZ2BDypIBvmNB27WYWYz76M+Yv/YXw==
+  dependencies:
+    bluebird "^3.7.2"
+    chokidar "^3.5.3"
+    graceful-fs "^4.2.10"
+    hexo-util "^2.7.0"
 
 hexo-fs@^4.1.1:
   version "4.1.1"
@@ -1124,6 +1146,11 @@ lower-case@^2.0.2:
   integrity sha512-7fm3l3NAF9WfN6W3JOmf5drwpVqX78JtoGJ3A6W0a6ZnldM41w2fV5D490psKFTpMds8TJse/eHLFFsNHHjHgg==
   dependencies:
     tslib "^2.0.3"
+
+luxon@^3.0.4:
+  version "3.4.4"
+  resolved "https://registry.npmjs.org/luxon/-/luxon-3.4.4.tgz"
+  integrity sha512-zobTr7akeGHnv7eBOXcRgMeCP6+uyYsczwmeRCauvpvaAltgNyTbLH/+VaEAPUeWBT+1GuNmz4wC/6jtQzbbVA==
 
 marked@^4.3.0:
   version "4.3.0"

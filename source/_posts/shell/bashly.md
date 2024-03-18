@@ -1195,6 +1195,76 @@ declare -g -A IPS
 
 注意，bashly中如果想要通过declare定义全局数组(或全局变量)，一定记得加上`-g`选项。这是因为在bashly的任何有效文件中的自定义代码都会被bashly重新以函数的方式包裹写入最终生成的命令脚本文件中，比如initialize.sh中的代码将会被写入initialize()函数内。而在函数内部declare不使用`-g`选项时，它默认定义的是函数内的局部变量，这样src下的其它文件将无法访问该全局变量。
 
+
+## 解析yaml文件中的内容
+
+bashly支持解析和读取init和yaml格式的文件内容。
+
+以yaml格式为例。先添加解析yaml文件的库函数：
+
+```shell
+bashly add yaml
+```
+
+执行该命令之后，将提供`yaml_load`函数用于解析yaml文件。可以在任意有效的sh小文件中通过如下方式解析给定的yaml文件：
+
+```shell
+yaml_load YAML_FILENAME.yml
+```
+
+假设`YAML_FILENAME.yml`文件的内容如下：
+
+```yaml
+environment: production
+server:
+  port: 3000
+  host: 'http://localhost:3000'
+```
+
+执行`yaml_load YAML_FILENAME.yml`时，将会输出：
+```shell
+environment="production"
+server_port="3000"
+server_host="http://localhost:3000"
+```
+
+但是注意，它并不能很好地解析yaml中复杂的嵌套的字典和列表。
+
+只是调用`yaml_load`函数来输出显然不是我们想要的操作，我们更可能的是从yaml文件中读取某个字段的值。
+
+既然`yaml_load`会以`a=b`的方式输出各个字段的值，那么就可以通过`eval`命令将这些输出定义为变量。
+```shell
+eval "$(yaml_load YAML_FILENAME.yml)"
+```
+现在就会声明三个可供访问的shell变量：
+```shell
+environment="production"
+server_port="3000"
+server_host="http://localhost:3000"
+```
+
+但是如何才能访问某个动态指定的变量呢？比如我在参数中指定要访问port字段的值。这需要用到bash提供的变量的间接引用功能：
+```shell
+var="value"
+ref_var="var"
+echo $var        # 将输出var
+echo ${!ref_var} # 将输出value
+```
+
+所以，通过间接引用变量，只需捕获命令行传递的想要访问的变量名`server_port`，假设将其存在变量variable中，然后：
+```shell
+# eval "$(yaml_load YAML_FILENAME.yml)"解析后创建的变量
+environment="production"
+server_port="3000"
+server_host="http://localhost:3000"
+
+# 通过捕获参数值，将要访问的变量名server_port保存在variable变量中
+# variable="server_port"
+echo ${!variable}
+```
+如此便可以获取到`server_port`变量的值。
+
+
 ## 设置bashly自身工作方式
 
 如果不做任何修改，bashly将以默认方式工作，但是这些工作方式可以修改。
